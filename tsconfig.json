@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "resolveJsonModule": true,
+    "types": ["node"],
     "noImplicitAny": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true
