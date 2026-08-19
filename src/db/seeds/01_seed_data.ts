@@ -1,10 +1,10 @@
 import type { Knex } from 'knex';
-import bcrypt from 'bcrypt';
+import { hashPassword } from '../../utils/password';
 
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw('TRUNCATE TABLE rentals, vehicles, staff RESTART IDENTITY CASCADE');
 
-  const passwordHash = bcrypt.hashSync('password123', 10);
+  const passwordHash = await hashPassword('password123');
 
   await knex('staff').insert([
     { id: 1, email: 'admin@rental.com', password_hash: passwordHash, name: 'Admin User' },
