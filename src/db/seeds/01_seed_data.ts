@@ -1,6 +1,13 @@
 import type { Knex } from 'knex';
 import { hashPassword } from '../../utils/password';
 
+async function resetSequence(knex: Knex, table: string): Promise<void> {
+  await knex.raw(
+    "SELECT setval(pg_get_serial_sequence(?, 'id'), COALESCE((SELECT MAX(id) FROM ??), 1))",
+    [table, table],
+  );
+}
+
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw('TRUNCATE TABLE rentals, vehicles, staff RESTART IDENTITY CASCADE');
 
@@ -68,6 +75,8 @@ export async function seed(knex: Knex): Promise<void> {
       deleted_at: knex.fn.now(),
     },
   ]);
+
+  await resetSequence(knex, 'vehicles');
 
   await knex('rentals').insert([
     {
@@ -191,4 +200,6 @@ export async function seed(knex: Knex): Promise<void> {
       status: 'cancelled',
     },
   ]);
+
+  await resetSequence(knex, 'rentals');
 }

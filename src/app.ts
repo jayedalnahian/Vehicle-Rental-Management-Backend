@@ -1,5 +1,6 @@
 import express from 'express';
 import authRouter from './modules/auth/auth.routes';
+import rentalsRouter from './modules/rentals/rental.routes';
 import { errorHandler } from './middleware/error-handler';
 
 const app = express();
@@ -11,6 +12,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/auth', authRouter);
+app.use('/rentals', rentalsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'Not Found' });
