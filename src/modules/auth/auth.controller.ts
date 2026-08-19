@@ -3,7 +3,9 @@ import { AuthService } from './auth.service';
 import type { LoginRequestBody, LoginResponseBody } from './types';
 
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {
+    this.login = this.login.bind(this);
+  }
 
   async login(
     req: Request<Record<string, string>, LoginResponseBody, LoginRequestBody>,
