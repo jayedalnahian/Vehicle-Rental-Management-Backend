@@ -155,7 +155,7 @@ export class RentalService {
 
   async list(query: ListRentalsQuery): Promise<ListRentalsResponse> {
     const page = query.page ?? 1;
-    const limit = query.limit ?? 20;
+    const limit = Math.min(query.limit ?? 20, 100);
 
     const [rows, total] = await Promise.all([
       this.rentalRepository.list(query, page, limit),

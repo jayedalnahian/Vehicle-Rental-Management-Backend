@@ -140,6 +140,14 @@ export class RentalRepository {
     if (filters.status !== undefined) {
       query.where('status', filters.status);
     }
+    if (filters.search !== undefined) {
+      query.where((qb) => {
+        qb.whereILike('customer_name', `%${filters.search}%`).orWhereILike(
+          'customer_phone',
+          `%${filters.search}%`,
+        );
+      });
+    }
     if (filters.start_date !== undefined && filters.end_date !== undefined) {
       query.where('start_date', '<=', filters.end_date).where('end_date', '>=', filters.start_date);
     } else if (filters.start_date !== undefined) {
