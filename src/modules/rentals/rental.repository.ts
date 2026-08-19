@@ -64,7 +64,11 @@ export class RentalRepository {
 
   async findById(id: number, trx?: Knex.Transaction): Promise<RentalRow | undefined> {
     const db = trx ?? this.db;
-    const row = await db('rentals').where('id', id).first();
+    const row = await db('rentals')
+      .select('rentals.*', 'vehicles.name as vehicle_name')
+      .leftJoin('vehicles', 'rentals.vehicle_id', 'vehicles.id')
+      .where('rentals.id', id)
+      .first();
     return row ? this.normalizeRow(row) : undefined;
   }
 
@@ -99,7 +103,9 @@ export class RentalRepository {
   }
 
   async list(query: ListRentalsQuery, page: number, limit: number): Promise<RentalRow[]> {
-    const base = this.db('rentals');
+    const base = this.db('rentals')
+      .select('rentals.*', 'vehicles.name as vehicle_name')
+      .leftJoin('vehicles', 'rentals.vehicle_id', 'vehicles.id');
     this.applyFilters(base, query);
     const rows = await base
       .orderBy('start_date', 'desc')
@@ -120,6 +126,7 @@ export class RentalRepository {
       ...row,
       start_date: formatDate(row.start_date),
       end_date: formatDate(row.end_date),
+      vehicle_name: row.vehicle_name ?? null,
     };
   }
 

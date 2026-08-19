@@ -1,6 +1,8 @@
 import express from 'express';
 import authRouter from './modules/auth/auth.routes';
 import rentalsRouter from './modules/rentals/rental.routes';
+import vehiclesRouter from './modules/vehicles/vehicle.routes';
+import { uploadDirectory } from './config/multer';
 import { errorHandler } from './middleware/error-handler';
 
 const app = express();
@@ -12,7 +14,10 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/auth', authRouter);
+app.use('/vehicles', vehiclesRouter);
 app.use('/rentals', rentalsRouter);
+
+app.use('/uploads', express.static(uploadDirectory));
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'Not Found' });

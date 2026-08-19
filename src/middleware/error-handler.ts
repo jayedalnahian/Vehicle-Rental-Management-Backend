@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler } from 'express';
+import multer from 'multer';
 import { BadRequestError } from '../utils/errors';
 import { ConflictError } from '../utils/errors';
 import { NotFoundError } from '../utils/errors';
@@ -27,6 +28,11 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
 
   if (err instanceof ConflictError) {
     res.status(409).json({ message: err.message });
+    return;
+  }
+
+  if (err instanceof multer.MulterError) {
+    res.status(400).json({ message: err.message });
     return;
   }
 

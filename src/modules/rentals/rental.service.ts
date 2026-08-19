@@ -27,6 +27,7 @@ function toRentalResponse(row: RentalRow): RentalResponse {
   return {
     id: row.id,
     vehicle_id: row.vehicle_id,
+    vehicle_name: row.vehicle_name,
     customer_name: row.customer_name,
     customer_phone: row.customer_phone,
     start_date: row.start_date,
@@ -65,7 +66,11 @@ export class RentalService {
       }
 
       const totalAmount = roundMoney(Number(vehicle.daily_rate) * days);
-      const row = await this.rentalRepository.insert(trx, { ...dto, total_amount: totalAmount });
+      const inserted = await this.rentalRepository.insert(trx, { ...dto, total_amount: totalAmount });
+      const row = await this.rentalRepository.findById(inserted.id, trx);
+      if (!row) {
+        throw new NotFoundError('Rental not found');
+      }
       return toRentalResponse(row);
     });
   }
@@ -115,7 +120,11 @@ export class RentalService {
         updateData.total_amount = roundMoney(Number(vehicle.daily_rate) * days);
       }
 
-      const row = await this.rentalRepository.update(trx, id, updateData);
+      await this.rentalRepository.update(trx, id, updateData);
+      const row = await this.rentalRepository.findById(id, trx);
+      if (!row) {
+        throw new NotFoundError('Rental not found');
+      }
       return toRentalResponse(row);
     });
   }
@@ -127,7 +136,11 @@ export class RentalService {
         throw new NotFoundError('Rental not found');
       }
 
-      const row = await this.rentalRepository.update(trx, id, { status: 'cancelled' });
+      await this.rentalRepository.update(trx, id, { status: 'cancelled' });
+      const row = await this.rentalRepository.findById(id, trx);
+      if (!row) {
+        throw new NotFoundError('Rental not found');
+      }
       return toRentalResponse(row);
     });
   }

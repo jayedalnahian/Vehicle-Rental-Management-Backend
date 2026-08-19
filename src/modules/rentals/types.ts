@@ -12,6 +12,7 @@ export const ACTIVE_RENTAL_STATUSES: readonly RentalStatus[] = ['booked', 'ongoi
 export interface RentalRow {
   id: number;
   vehicle_id: number;
+  vehicle_name: string | null;
   customer_name: string;
   customer_phone: string;
   start_date: string;
@@ -25,6 +26,7 @@ export interface RentalRow {
 export interface RentalRowRaw {
   id: number;
   vehicle_id: number;
+  vehicle_name: string | null;
   customer_name: string;
   customer_phone: string;
   start_date: string | Date;
@@ -38,6 +40,7 @@ export interface RentalRowRaw {
 export interface RentalResponse {
   id: number;
   vehicle_id: number;
+  vehicle_name: string | null;
   customer_name: string;
   customer_phone: string;
   start_date: string;

@@ -199,6 +199,16 @@ export async function seed(knex: Knex): Promise<void> {
       total_amount: 180.0,
       status: 'cancelled',
     },
+    {
+      id: 13,
+      vehicle_id: 7,
+      customer_name: 'Deleted Fleet Customer',
+      customer_phone: '01844444444',
+      start_date: '2026-06-01',
+      end_date: '2026-06-05',
+      total_amount: 300.0,
+      status: 'completed',
+    },
   ]);
 
   await resetSequence(knex, 'rentals');
