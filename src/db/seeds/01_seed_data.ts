@@ -1,10 +1,17 @@
 import type { Knex } from 'knex';
-import bcrypt from 'bcrypt';
+import { hashPassword } from '../../utils/password';
+
+async function resetSequence(knex: Knex, table: string): Promise<void> {
+  await knex.raw(
+    "SELECT setval(pg_get_serial_sequence(?, 'id'), COALESCE((SELECT MAX(id) FROM ??), 1))",
+    [table, table],
+  );
+}
 
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw('TRUNCATE TABLE rentals, vehicles, staff RESTART IDENTITY CASCADE');
 
-  const passwordHash = bcrypt.hashSync('password123', 10);
+  const passwordHash = await hashPassword('password123');
 
   await knex('staff').insert([
     { id: 1, email: 'admin@rental.com', password_hash: passwordHash, name: 'Admin User' },
@@ -16,7 +23,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: 'Toyota Corolla',
       plate_number: 'DHA-1234',
       category: 'Sedan',
-      daily_rate: 45.0,
+      daily_rate: 1000.0,
       deleted_at: null,
     },
     {
@@ -69,6 +76,8 @@ export async function seed(knex: Knex): Promise<void> {
     },
   ]);
 
+  await resetSequence(knex, 'vehicles');
+
   await knex('rentals').insert([
     {
       id: 1,
@@ -77,7 +86,7 @@ export async function seed(knex: Knex): Promise<void> {
       customer_phone: '01711111111',
       start_date: '2026-07-29',
       end_date: '2026-08-03',
-      total_amount: 270.0,
+      total_amount: 6000.0,
       status: 'completed',
     },
     {
@@ -87,7 +96,7 @@ export async function seed(knex: Knex): Promise<void> {
       customer_phone: '01722222222',
       start_date: '2026-08-10',
       end_date: '2026-08-12',
-      total_amount: 135.0,
+      total_amount: 3000.0,
       status: 'booked',
     },
     {
@@ -190,5 +199,17 @@ export async function seed(knex: Knex): Promise<void> {
       total_amount: 180.0,
       status: 'cancelled',
     },
+    {
+      id: 13,
+      vehicle_id: 7,
+      customer_name: 'Deleted Fleet Customer',
+      customer_phone: '01844444444',
+      start_date: '2026-06-01',
+      end_date: '2026-06-05',
+      total_amount: 300.0,
+      status: 'completed',
+    },
   ]);
+
+  await resetSequence(knex, 'rentals');
 }

@@ -22,7 +22,7 @@ export async function up(knex: Knex): Promise<void> {
     table.check(
       "status IN ('booked', 'ongoing', 'completed', 'cancelled')",
       undefined,
-      'rentals_status_check'
+      'rentals_status_check',
     );
     table.check('end_date >= start_date', undefined, 'rentals_dates_check');
 
