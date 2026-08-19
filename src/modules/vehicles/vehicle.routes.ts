@@ -1,11 +1,12 @@
 import { promises as fs } from 'node:fs';
 import { Router } from 'express';
-import type { RequestHandler } from 'express';
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type Joi from 'joi';
 import db from '../../config/db';
 import { upload } from '../../config/multer';
 import { requireAuth } from '../../middleware/auth';
 import { validateQuery } from '../../middleware/validate';
+import { ValidationError } from '../../utils/errors';
 import { VehicleController } from './vehicle.controller';
 import { VehicleService } from './vehicle.service';
 import { VehicleRepository } from './vehicle.repository';
@@ -22,14 +23,19 @@ const vehicleService = new VehicleService(vehicleRepository);
 const vehicleController = new VehicleController(vehicleService);
 
 function validateVehicleBody(schema: Joi.ObjectSchema): RequestHandler {
-  return async (req, res, next) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
     const { value, error } = schema.validate(req.body, { abortEarly: false });
 
     if (error) {
       if (req.file) {
         await fs.unlink(req.file.path).catch(() => undefined);
       }
-      res.status(400).json({ errors: error.details.map((detail) => detail.message) });
+      next(
+        new ValidationError(
+          'Validation failed',
+          error.details.map((detail) => detail.message),
+        ),
+      );
       return;
     }
 
@@ -39,9 +45,9 @@ function validateVehicleBody(schema: Joi.ObjectSchema): RequestHandler {
 }
 
 function requireAtLeastOneChange(): RequestHandler {
-  return (req, res, next) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     if (Object.keys(req.body).length === 0 && !req.file) {
-      res.status(400).json({ errors: ['No fields to update'] });
+      next(new ValidationError('Validation failed', ['No fields to update']));
       return;
     }
     next();

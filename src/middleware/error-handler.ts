@@ -4,10 +4,19 @@ import { BadRequestError } from '../utils/errors';
 import { ConflictError } from '../utils/errors';
 import { NotFoundError } from '../utils/errors';
 import { UnauthorizedError } from '../utils/errors';
+import { ValidationError } from '../utils/errors';
 
 export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
   if (res.headersSent) {
     next(err);
+    return;
+  }
+
+  if (err instanceof ValidationError) {
+    res.status(400).json({
+      message: err.message,
+      ...(err.errors !== undefined && { errors: err.errors }),
+    });
     return;
   }
 
