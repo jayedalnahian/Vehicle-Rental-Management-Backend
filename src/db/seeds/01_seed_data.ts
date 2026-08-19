@@ -23,7 +23,7 @@ export async function seed(knex: Knex): Promise<void> {
       name: 'Toyota Corolla',
       plate_number: 'DHA-1234',
       category: 'Sedan',
-      daily_rate: 45.0,
+      daily_rate: 1000.0,
       deleted_at: null,
     },
     {
@@ -86,7 +86,7 @@ export async function seed(knex: Knex): Promise<void> {
       customer_phone: '01711111111',
       start_date: '2026-07-29',
       end_date: '2026-08-03',
-      total_amount: 270.0,
+      total_amount: 6000.0,
       status: 'completed',
     },
     {
@@ -96,7 +96,7 @@ export async function seed(knex: Knex): Promise<void> {
       customer_phone: '01722222222',
       start_date: '2026-08-10',
       end_date: '2026-08-12',
-      total_amount: 135.0,
+      total_amount: 3000.0,
       status: 'booked',
     },
     {
